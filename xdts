@@ -486,13 +486,13 @@ playerFrame.Parent = outerFrame
 
 -- Button functionality
 itemsButton.MouseButton1Click:Connect(function()
-    itemsFrame.Visible = true
+    frame.Visible = true
     playerFrame.Visible = false
 end)
 
 playerButton.MouseButton1Click:Connect(function()
     playerFrame.Visible = true
-    itemsFrame.Visible = false
+    frame.Visible = false
 end)
 
 
