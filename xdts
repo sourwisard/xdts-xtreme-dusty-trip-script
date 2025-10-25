@@ -454,3 +454,53 @@ loopBringButton.MouseButton1Click:Connect(function()
     loopBring = not loopBring
     loopBringButton.Text = loopBring and "Stop Loop" or "Loop Bring"
 end)
+--------------------------------------------------------------------------------
+-- Create Items Button
+local itemsButton = Instance.new("TextButton")
+itemsButton.Name = "ItemsButton"
+itemsButton.Text = "Items"
+itemsButton.Size = UDim2.new(0, 100, 0, 30) -- width 100, height 30
+itemsButton.Position = UDim2.new(0, 0, 0, 0) -- top-left
+itemsButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+itemsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+itemsButton.Parent = outerFrame
+
+-- Create Player Button
+local playerButton = Instance.new("TextButton")
+playerButton.Name = "PlayerButton"
+playerButton.Text = "Player"
+playerButton.Size = UDim2.new(0, 100, 0, 30)
+playerButton.Position = UDim2.new(0, 110, 0, 0) -- next to Items button
+playerButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerButton.Parent = outerFrame
+
+-- Create Player Frame
+local playerFrame = Instance.new("Frame")
+playerFrame.Name = "PlayerFrame"
+playerFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
+playerFrame.Position = UDim2.new(0.199, 0, 0.05, 0)
+playerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+playerFrame.Visible = false
+playerFrame.Parent = outerFrame
+
+-- Button functionality
+itemsButton.MouseButton1Click:Connect(function()
+    itemsFrame.Visible = true
+    playerFrame.Visible = false
+end)
+
+playerButton.MouseButton1Click:Connect(function()
+    playerFrame.Visible = true
+    itemsFrame.Visible = false
+end)
+
+
+
+
+
+
+
+
+
+
