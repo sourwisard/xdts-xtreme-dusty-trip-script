@@ -169,7 +169,7 @@ local function shouldExclude(model)
 		if model:IsA("Model") and Players:FindFirstChild(model.Name) then
 			return true -- ignore player characters
 		end
-		local exclusions = {"model","boulders","smallrock","mountain","van","car","sedan","trailer","boulder","ramka","perthyz","border","campsite","cactus"}
+		local exclusions = {"model","boulders","smallrock","mountain","van","car","sedan","trailer","boulder","ramka","perthyz","border","campsite","cactus","mutant"}
 		local name = model.Name:lower()
 		for _, ex in ipairs(exclusions) do
 			if name:match("^"..ex) then return true end
