@@ -469,10 +469,10 @@ playerButton.Parent = outerFrame
 local playerFrame = Instance.new("Frame")
 playerFrame.Name = "PlayerFrame"
 playerFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
-playerFrame.Position = UDim2.new(0.199, 0, 0.05, 0)
+playerFrame.Position = UDim2.new(0.199, 0.05, 0.1, 0)
 playerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-playerFrame.Visible = false
 playerFrame.Parent = outerFrame
+playerFrame.Visible = false
 
 -- Button functionality
 itemsButton.Activated:Connect(function()
@@ -484,3 +484,5 @@ playerButton.Activated:Connect(function()
     playerFrame.Visible = true
     itemsFrame.Visible = false
 end)
+
+
