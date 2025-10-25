@@ -1,0 +1,338 @@
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Create the ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ExampleGUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = game:GetService("CoreGui")
+
+-- Outer frame (bigger)
+local outerFrame = Instance.new("Frame")
+outerFrame.Size = UDim2.new(0.6, 0, 0.7, 0)
+outerFrame.Position = UDim2.new(0.15, 0, 0.15, 0)
+outerFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+outerFrame.BorderSizePixel = 0
+outerFrame.Parent = screenGui
+
+-- Inner frame for buttons and other content
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.8, 0, 0.9, 0)
+frame.Position = UDim2.new(0.199, 0.05, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Parent = outerFrame
+
+-- Toggle button (draggable)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0.12, 0, 0.05, 0)
+toggleButton.Position = UDim2.new(0.44, 0, 0.85, 0)
+toggleButton.Text = "Hide Frame"
+toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
+toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+toggleButton.Parent = screenGui
+
+toggleButton.MouseButton1Click:Connect(function()
+	outerFrame.Visible = not outerFrame.Visible
+	toggleButton.Text = outerFrame.Visible and "Hide Frame" or "Show Frame"
+end)
+
+-- Drag functionality
+local dragging = false
+local dragStart = Vector2.new()
+local startPos = UDim2.new()
+
+toggleButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = toggleButton.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+toggleButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
+		local delta = input.Position - dragStart
+		local screenSize = toggleButton.Parent.AbsoluteSize
+		toggleButton.Position = UDim2.new(
+			startPos.X.Scale + delta.X / screenSize.X,
+			0,
+			startPos.Y.Scale + delta.Y / screenSize.Y,
+			0
+		)
+	end
+end)
+
+-- Label for selected item
+local selectedLabel = Instance.new("TextLabel")
+selectedLabel.Size = UDim2.new(0.38,0,0.08,0)
+selectedLabel.Position = UDim2.new(0.45,0,0.05,0)
+selectedLabel.Text = "Selected Item: None"
+selectedLabel.TextColor3 = Color3.fromRGB(255,255,255)
+selectedLabel.BackgroundColor3 = Color3.fromRGB(50,50,50)
+selectedLabel.TextScaled = true
+selectedLabel.TextWrapped = true
+selectedLabel.Parent = frame
+
+-- Left scrolling frame (nearby items)
+local scrollFrameLeft = Instance.new("ScrollingFrame")
+scrollFrameLeft.Size = UDim2.new(0.2,0,0.7,0)
+scrollFrameLeft.Position = UDim2.new(0.48,0,0.15,0)
+scrollFrameLeft.CanvasSize = UDim2.new(0,0,0,0)
+scrollFrameLeft.ScrollBarThickness = 8
+scrollFrameLeft.BackgroundColor3 = Color3.fromRGB(35,35,35)
+scrollFrameLeft.Parent = frame
+
+local listLayoutLeft = Instance.new("UIListLayout")
+listLayoutLeft.SortOrder = Enum.SortOrder.LayoutOrder
+listLayoutLeft.Padding = UDim.new(0,2)
+listLayoutLeft.Parent = scrollFrameLeft
+
+listLayoutLeft:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	scrollFrameLeft.CanvasSize = UDim2.new(0,0,0,listLayoutLeft.AbsoluteContentSize.Y)
+end)
+
+-- Right scrolling frame (moved items)
+local scrollFrameRight = Instance.new("ScrollingFrame")
+scrollFrameRight.Size = UDim2.new(0.3,0,0.7,0)
+scrollFrameRight.Position = UDim2.new(0.7,0,0.15,0)
+scrollFrameRight.CanvasSize = UDim2.new(0,0,0,0)
+scrollFrameRight.ScrollBarThickness = 8
+scrollFrameRight.BackgroundColor3 = Color3.fromRGB(35,35,35)
+scrollFrameRight.Parent = frame
+
+local listLayoutRight = Instance.new("UIListLayout")
+listLayoutRight.SortOrder = Enum.SortOrder.LayoutOrder
+listLayoutRight.Padding = UDim.new(0,2)
+listLayoutRight.Parent = scrollFrameRight
+
+listLayoutRight:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	scrollFrameRight.CanvasSize = UDim2.new(0,0,0,listLayoutRight.AbsoluteContentSize.Y)
+end)
+
+-- Create buttons inside inner frame
+local function createButton(text, posY)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0.15,0,0.08,0)
+	btn.Position = UDim2.new(0.3,0,posY,0)
+	btn.Text = text
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+	btn.Parent = frame
+	return btn
+end
+
+local bringAllButton = createButton("Bring All",0.15)
+local bringOneButton = createButton("Bring One",0.25)
+local bringAllItemButton = createButton("Bring All of Item",0.35)
+
+-- Close button in outer frame
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0.15,0,0.08,0)
+closeButton.Position = UDim2.new(0.85,0,0,0)
+closeButton.Text = "Close"
+closeButton.TextColor3 = Color3.fromRGB(255,255,255)
+closeButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
+closeButton.Parent = outerFrame
+
+closeButton.MouseButton1Click:Connect(function()
+	if toggleButton then toggleButton:Destroy() end
+	outerFrame:Destroy()
+end)
+
+-- Function to Bring All models
+bringAllButton.MouseButton1Click:Connect(function()
+	local character = LocalPlayer.Character
+	if not character then return end
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	-- Clear previous children
+	for _, child in ipairs(scrollFrameRight:GetChildren()) do
+		if child:IsA("TextLabel") then child:Destroy() end
+	end
+	for _, child in ipairs(scrollFrameLeft:GetChildren()) do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
+
+	local exclusions = {["model"]=true, ["players"]=true, ["boulders"]=true}
+	for _, plr in ipairs(Players:GetPlayers()) do exclusions[plr.Name:lower()] = true end
+
+	local movedModels = {}
+
+	for _, model in ipairs(workspace:GetChildren()) do
+		if model:IsA("Model") then
+			local nameLower = model.Name:lower()
+			if not exclusions[nameLower] and
+				not nameLower:match("^smallrock") and
+				not nameLower:match("^mountain") and
+				not nameLower:match("^van") and
+				not nameLower:match("^car") and
+				not nameLower:match("^sedan") and
+				not nameLower:match("^trailer") and
+				not nameLower:match("^boulder") and
+				not nameLower:match("^ramka") and
+				not nameLower:match("^perthyz") and
+				not nameLower:match("^border") and
+				not nameLower:match("^campsite") and
+				not nameLower:match("^cactus") then
+
+				local moved = false
+				for _, part in ipairs(model:GetDescendants()) do
+					if part:IsA("BasePart") then
+						part.CFrame = hrp.CFrame + Vector3.new(0,5,0)
+						moved = true
+					end
+				end
+
+				if moved then
+					table.insert(movedModels, model.Name)
+				end
+			end
+		end
+	end
+
+	if #movedModels > 0 then
+		for _, name in ipairs(movedModels) do
+			local label = Instance.new("TextLabel")
+			label.Size = UDim2.new(1,0,0,30)
+			label.BackgroundTransparency = 1
+			label.TextColor3 = Color3.fromRGB(255,255,255)
+			label.TextScaled = true
+			label.TextWrapped = true
+			label.Text = name
+			label.Parent = scrollFrameRight
+		end
+	else
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1,0,0,30)
+		label.BackgroundTransparency = 1
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		label.TextScaled = true
+		label.TextWrapped = true
+		label.Text = "No models were teleported."
+		label.Parent = scrollFrameRight
+	end
+end)
+
+-- Bring One button
+bringOneButton.MouseButton1Click:Connect(function()
+	local selectedName = selectedLabel.Text:gsub("Selected Item: ","")
+	if selectedName == "None" then return end
+
+	local character = LocalPlayer.Character
+	if not character then return end
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	local model = workspace:FindFirstChild(selectedName)
+	if model then
+		for _, part in ipairs(model:GetDescendants()) do
+			if part:IsA("BasePart") then
+				part.CFrame = hrp.CFrame + Vector3.new(0,5,0)
+			end
+		end
+
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1,0,0,30)
+		label.BackgroundTransparency = 1
+		label.TextColor3 = Color3.fromRGB(255,255,255)
+		label.TextScaled = true
+		label.TextWrapped = true
+		label.Text = selectedName
+		label.Parent = scrollFrameRight
+	end
+end)
+
+-- Bring All of Item button
+bringAllItemButton.MouseButton1Click:Connect(function()
+	local selectedName = selectedLabel.Text:gsub("Selected Item: ","")
+	if selectedName == "None" then return end
+
+	local character = LocalPlayer.Character
+	if not character then return end
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	for _, model in ipairs(workspace:GetChildren()) do
+		if model:IsA("Model") and model.Name == selectedName then
+			for _, part in ipairs(model:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.CFrame = hrp.CFrame + Vector3.new(0,5,0)
+				end
+			end
+
+			local label = Instance.new("TextLabel")
+			label.Size = UDim2.new(1,0,0,30)
+			label.BackgroundTransparency = 1
+			label.TextColor3 = Color3.fromRGB(255,255,255)
+			label.TextScaled = true
+			label.TextWrapped = true
+			label.Text = selectedName
+			label.Parent = scrollFrameRight
+		end
+	end
+end)
+
+-- Function to constantly update nearby items
+local function updateNearbyItems()
+	while frame.Parent do
+		local character = LocalPlayer.Character
+		if character and character:FindFirstChild("HumanoidRootPart") then
+			local hrp = character.HumanoidRootPart
+
+			-- Clear previous buttons
+			for _, child in ipairs(scrollFrameLeft:GetChildren()) do
+				if child:IsA("TextButton") then child:Destroy() end
+			end
+
+			local exclusions = {["model"]=true, ["players"]=true, ["boulders"]=true}
+			for _, plr in ipairs(Players:GetPlayers()) do exclusions[plr.Name:lower()] = true end
+
+			for _, model in ipairs(workspace:GetChildren()) do
+				if model:IsA("Model") then
+					local nameLower = model.Name:lower()
+					if not exclusions[nameLower] and
+						not nameLower:match("^smallrock") and
+						not nameLower:match("^mountain") and
+						not nameLower:match("^van") and
+						not nameLower:match("^car") and
+						not nameLower:match("^sedan") and
+						not nameLower:match("^trailer") and
+						not nameLower:match("^boulder") and
+						not nameLower:match("^ramka") and
+						not nameLower:match("^perthyz") and
+						not nameLower:match("^border") and
+						not nameLower:match("^campsite") and
+						not nameLower:match("^cactus") then
+
+						local closestPart = model:FindFirstChildWhichIsA("BasePart", true)
+						if closestPart and (closestPart.Position - hrp.Position).Magnitude <= 1000 then
+							local btn = Instance.new("TextButton")
+							btn.Size = UDim2.new(1,0,0,50)
+							btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+							btn.TextColor3 = Color3.fromRGB(255,255,255)
+							btn.TextScaled = true
+							btn.TextWrapped = true
+							btn.Text = model.Name
+							btn.Parent = scrollFrameLeft
+
+							btn.MouseButton1Click:Connect(function()
+								selectedLabel.Text = "Selected Item: "..model.Name
+							end)
+						end
+					end
+				end
+			end
+		end
+		wait(1)
+	end
+end
+
+spawn(updateNearbyItems)
