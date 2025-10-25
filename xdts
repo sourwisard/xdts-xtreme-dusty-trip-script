@@ -1,8 +1,11 @@
--- Services
+--// Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
 
--- Create the ScreenGui
+--// GUI Setup
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ExampleGUI"
 screenGui.ResetOnSpawn = false
@@ -131,6 +134,8 @@ end
 local bringAllButton = createButton("Bring All",0.15)
 local bringOneButton = createButton("Bring One",0.25)
 local bringAllItemButton = createButton("Bring All of Item",0.35)
+local mouseSphereButton = createButton("Mouse Sphere",0.45)
+local bringAllOnePosButton = createButton("Bring All of One Pos",0.55)
 
 -- Close button in outer frame
 local closeButton = Instance.new("TextButton")
@@ -336,3 +341,83 @@ local function updateNearbyItems()
 end
 
 spawn(updateNearbyItems)
+
+--------------------------------------------------------------------
+--// Mouse-Following Sphere & Bring All of One Pos
+--------------------------------------------------------------------
+local sphere = nil
+local sphereLocked = false
+
+-- Raycast setup to ignore player
+local raycastParams = RaycastParams.new()
+raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}
+raycastParams.IgnoreWater = true
+
+-- Create or delete sphere
+mouseSphereButton.MouseButton1Click:Connect(function()
+	if sphere and sphere.Parent then
+		sphere:Destroy()
+		sphere = nil
+		sphereLocked = false
+		mouseSphereButton.Text = "Mouse Sphere"
+	else
+		sphere = Instance.new("Part")
+		sphere.Shape = Enum.PartType.Ball
+		sphere.Size = Vector3.new(0.5,0.5,0.5)
+		sphere.Color = Color3.fromRGB(0,170,255)
+		sphere.Material = Enum.Material.Neon
+		sphere.Anchored = true
+		sphere.CanCollide = false
+		sphere.CanQuery = false
+		sphere.CanTouch = false
+		sphere.Name = "MouseFollowerSphere"
+		sphere.Parent = workspace
+		mouseSphereButton.Text = "Stop Sphere"
+	end
+end)
+
+-- Sphere follows mouse if not locked
+RunService.RenderStepped:Connect(function()
+	if sphere and sphere.Parent and not sphereLocked then
+		local mousePos = UserInputService:GetMouseLocation()
+		local ray = Camera:ViewportPointToRay(mousePos.X, mousePos.Y)
+		local rayResult = workspace:Raycast(ray.Origin, ray.Direction * 500, raycastParams)
+		if rayResult then
+			sphere.Position = rayResult.Position
+		else
+			sphere.Position = ray.Origin + ray.Direction * 10
+		end
+	end
+end)
+
+-- Lock/unlock sphere with P
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.P and sphere and sphere.Parent then
+		sphereLocked = not sphereLocked
+		mouseSphereButton.Text = sphereLocked and "Sphere Locked" or "Stop Sphere"
+	end
+end)
+
+-- Bring all items of selected name to sphere and delete it
+bringAllOnePosButton.MouseButton1Click:Connect(function()
+	if not sphere or not sphere.Parent then return end
+	local selectedName = selectedLabel.Text:gsub("Selected Item: ","")
+	if selectedName == "None" then return end
+	local targetPos = sphere.Position
+	for _, model in ipairs(workspace:GetChildren()) do
+		if model:IsA("Model") and model.Name == selectedName then
+			for _, part in ipairs(model:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.CFrame = CFrame.new(targetPos)
+				end
+			end
+		end
+	end
+	-- Delete the sphere after teleporting
+	sphere:Destroy()
+	sphere = nil
+	sphereLocked = false
+	mouseSphereButton.Text = "Mouse Sphere"
+end)
