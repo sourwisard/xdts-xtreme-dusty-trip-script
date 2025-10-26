@@ -23,7 +23,7 @@ outerFrame.Parent = screenGui
 -- Inner frame
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0.8, 0, 0.9, 0)
-frame.Position = UDim2.new(0.199, 0.05, 0.1, 0)
+frame.Position = UDim2.new(0.199, 0.05, 0.1, -5)
 frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 frame.Parent = outerFrame
 
@@ -447,7 +447,7 @@ end)
 -- Player Frame
 local playerframe = Instance.new("Frame")
 playerframe.Size = UDim2.new(0.8, 0, 0.9, 0)
-playerframe.Position = UDim2.new(0.199, 0, 0.05, 0)
+playerframe.Position = UDim2.new(0.199, 0, 0.05, 31)
 playerframe.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 playerframe.Parent = outerFrame
 playerframe.Visible = false
