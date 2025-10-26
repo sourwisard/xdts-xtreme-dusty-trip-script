@@ -447,7 +447,7 @@ end)
 -- Player Frame
 local playerframe = Instance.new("Frame")
 playerframe.Size = UDim2.new(0.8, 0, 0.9, 0)
-playerframe.Position = UDim2.new(0.199, 0.05, 0.1, 0)
+playerframe.Position = UDim2.new(0.199, 0, 0.05, 0)
 playerframe.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 playerframe.Parent = outerFrame
 playerframe.Visible = false
@@ -461,10 +461,15 @@ itemButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 itemButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 itemButton.Parent = outerFrame
 
--- Player Button (directly under itemButton)
+-- Player Button directly under itemButton
 local playerButton = Instance.new("TextButton")
 playerButton.Size = itemButton.Size
-playerButton.Position = UDim2.new(0, 0, 1.2, 0)
+playerButton.Position = UDim2.new(
+    itemButton.Position.X.Scale,
+    itemButton.Position.X.Offset,
+    itemButton.Position.Y.Scale,
+    itemButton.Position.Y.Offset + itemButton.Size.Y.Offset + 5 -- 5px padding
+)
 playerButton.Text = "player"
 playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 playerButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
@@ -480,12 +485,6 @@ playerButton.Activated:Connect(function()
     playerframe.Visible = true
     frame.Visible = false
 end)
-
-playerButton.Activated:Connect(function()
-	playerframe.Visible = true
-	frame.Visible = false
-end)
-
 
 
 
