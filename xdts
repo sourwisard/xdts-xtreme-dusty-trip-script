@@ -292,7 +292,7 @@ local function updateNearbyItems()
             for _, model in ipairs(workspace:GetChildren()) do
                 if model:IsA("Model") and not shouldExclude(model) then
                     local closestPart = model:FindFirstChildWhichIsA("BasePart", true)
-                    if closestPart and (closestPart.Position - hrp.Position).Magnitude <= 1000 then
+                    if closestPart and (closestPart.Position - hrp.Position).Magnitude <= 10000000 then
                         modelCounts[model.Name] = (modelCounts[model.Name] or 0) + 1
                     end
                 end
@@ -490,11 +490,4 @@ playerButton.Activated:Connect(function()
     playerframe.Visible = true
     frame.Visible = false
 end)
-
-
-
-
-
-
-
 
