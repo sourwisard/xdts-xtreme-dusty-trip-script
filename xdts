@@ -464,11 +464,21 @@ itemButton.Parent = outerFrame
 -- Player Button directly under itemButton
 local playerButton = Instance.new("TextButton")
 playerButton.Size = itemButton.Size
-playerButton.Position = UDim2.new(0, 0, 0, 160)
+playerButton.Position = UDim2.new(0, 0, 0, 60)
 playerButton.Text = "player"
 playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 playerButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 playerButton.Parent = outerFrame
+
+local mainbutton = Instance.new("TextButton")
+mainbutton.Size = itemButton.Size
+mainbutton.Position = UDim2.new(0, 0, 0, 120)
+mainbutton.Text = "player"
+mainbutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+mainbutton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+mainbutton.Parent = outerFrame
+
+
 
 -- Button functionality
 itemButton.Activated:Connect(function()
