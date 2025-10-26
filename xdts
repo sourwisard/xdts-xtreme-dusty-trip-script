@@ -36,7 +36,7 @@ toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
 toggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 toggleButton.Parent = screenGui
 
-toggleButton.MouseButton1Click:Connect(function()
+toggleButton.Activated:Connect(function()
     outerFrame.Visible = not outerFrame.Visible
     toggleButton.Text = outerFrame.Visible and "Hide Frame" or "Show Frame"
 end)
@@ -158,7 +158,7 @@ closeButton.TextColor3 = Color3.fromRGB(255,255,255)
 closeButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
 closeButton.Parent = outerFrame
 
-closeButton.MouseButton1Click:Connect(function()
+closeButton.Activated:Connect(function()
     if toggleButton then toggleButton:Destroy() end
     outerFrame:Destroy()
 end)
@@ -166,11 +166,7 @@ end)
 -- Unified exclusion function
 local function shouldExclude(model)
     if typeof(model) == "Instance" then
-        -- Ignore player characters
-        if model:IsA("Model") and Players:FindFirstChild(model.Name) then
-            return true
-        end
-        -- Excluded model name patterns
+        if model:IsA("Model") and Players:FindFirstChild(model.Name) then return true end
         local exclusions = {"^model","^boulder","^smallrock","^mountain","^van","^car","^sedan","^trailer","^ramka","^perthyz","^border","^campsite","^cactus","^mutant"}
         local name = model.Name:lower()
         for _, ex in ipairs(exclusions) do
@@ -190,13 +186,12 @@ local function moveModelTo(model, position)
 end
 
 -- Bring All
-bringAllButton.MouseButton1Click:Connect(function()
+bringAllButton.Activated:Connect(function()
     local character = LocalPlayer.Character
     if not character then return end
     local hrp = character:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    -- Clear previous
     for _, child in ipairs(scrollFrameRight:GetChildren()) do
         if child:IsA("TextLabel") then child:Destroy() end
     end
@@ -236,7 +231,7 @@ bringAllButton.MouseButton1Click:Connect(function()
 end)
 
 -- Bring One
-bringOneButton.MouseButton1Click:Connect(function()
+bringOneButton.Activated:Connect(function()
     local selectedName = selectedLabel.Text:gsub("Selected Item: ","")
     if selectedName == "None" then return end
     local character = LocalPlayer.Character
@@ -258,7 +253,7 @@ bringOneButton.MouseButton1Click:Connect(function()
 end)
 
 -- Bring All of Item
-bringAllItemButton.MouseButton1Click:Connect(function()
+bringAllItemButton.Activated:Connect(function()
     local selectedName = selectedLabel.Text:gsub("Selected Item: ","")
     if selectedName == "None" then return end
     local character = LocalPlayer.Character
@@ -290,13 +285,9 @@ local function updateNearbyItems()
         local character = LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
             local hrp = character.HumanoidRootPart
-
-            -- Clear previous buttons
             for _, child in ipairs(scrollFrameLeft:GetChildren()) do
                 if child:IsA("TextButton") then child:Destroy() end
             end
-
-            -- Count models by name
             local modelCounts = {}
             for _, model in ipairs(workspace:GetChildren()) do
                 if model:IsA("Model") and not shouldExclude(model) then
@@ -306,8 +297,6 @@ local function updateNearbyItems()
                     end
                 end
             end
-
-            -- Create buttons
             for modelName, count in pairs(modelCounts) do
                 local btn = Instance.new("TextButton")
                 btn.Size = UDim2.new(.9,0,0,50)
@@ -317,7 +306,7 @@ local function updateNearbyItems()
                 btn.TextWrapped = true
                 btn.Text = modelName.."  x="..count
                 btn.Parent = scrollFrameLeft
-                btn.MouseButton1Click:Connect(function()
+                btn.Activated:Connect(function()
                     selectedLabel.Text = "Selected Item: "..modelName
                 end)
             end
@@ -338,8 +327,8 @@ local raycastParams = RaycastParams.new()
 raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 raycastParams.IgnoreWater = true
 
--- Create spheres
-mouseSphereButton.MouseButton1Click:Connect(function()
+-- Mouse Sphere
+mouseSphereButton.Activated:Connect(function()
     if sphere and sphere.Parent then
         sphere:Destroy()
         sphere = nil
@@ -379,7 +368,6 @@ end)
 -- Sphere follow + loop bring
 RunService.RenderStepped:Connect(function()
     if sphere and sphere.Parent and ySphere and ySphere.Parent and not sphereLocked then
-        -- Add players to raycast blacklist
         raycastParams.FilterDescendantsInstances = {sphere, ySphere}
         for _, plr in ipairs(Players:GetPlayers()) do
             if plr.Character then
@@ -425,7 +413,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 -- Bring all to Y-level
-bringAllOnePosButton.MouseButton1Click:Connect(function()
+bringAllOnePosButton.Activated:Connect(function()
     if not ySphere or not ySphere.Parent then return end
     local selectedName = selectedLabel.Text:gsub("Selected Item: ","")
     if selectedName == "None" then return end
@@ -450,7 +438,7 @@ bringAllOnePosButton.MouseButton1Click:Connect(function()
 end)
 
 -- Loop Bring toggle
-loopBringButton.MouseButton1Click:Connect(function()
+loopBringButton.Activated:Connect(function()
     loopBring = not loopBring
     loopBringButton.Text = loopBring and "Stop Loop" or "Loop Bring"
 end)
