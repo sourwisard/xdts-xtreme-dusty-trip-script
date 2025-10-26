@@ -452,16 +452,16 @@ playerframe.Parent = outerFrame
 
 local itemButton = Instance.new("TextButton")
 itemButton.Size = UDim2.new(0.15,0,0.08,0)
-itemButton.Position = UDim2.new(0,0.2,0,0)
-itemButton.Text = "Close"
+itemButton.Position = UDim2.new(0,0,0,0)
+itemButton.Text = "item"
 itemButton.TextColor3 = Color3.fromRGB(255,255,255)
 itemButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
 itemButton.Parent = outerFrame
 
 local playerButton = Instance.new("TextButton")
 itemButton.Size = UDim2.new(0.15,0,0.08,0)
-itemButton.Position = UDim2.new(0,0,0,0)
-itemButton.Text = "Close"
+itemButton.Position = UDim2.new(0,0,0,0.2)
+itemButton.Text = "player"
 itemButton.TextColor3 = Color3.fromRGB(255,255,255)
 itemButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
 itemButton.Parent = outerFrame
