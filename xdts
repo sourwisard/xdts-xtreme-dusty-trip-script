@@ -444,6 +444,7 @@ loopBringButton.Activated:Connect(function()
 end)
 
 -----------------------------------------------------------------------------------------------------------
+-- Player Frame
 local playerframe = Instance.new("Frame")
 playerframe.Size = UDim2.new(0.8, 0, 0.9, 0)
 playerframe.Position = UDim2.new(0.199, 0.05, 0.1, 0)
@@ -451,29 +452,39 @@ playerframe.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 playerframe.Parent = outerFrame
 playerframe.Visible = false
 
+-- Item Button
 local itemButton = Instance.new("TextButton")
-itemButton.Size = UDim2.new(0.15,0,0.08,0)
-itemButton.Position = UDim2.new(0,0,0,0)
+itemButton.Size = UDim2.new(0.15, 0, 0.08, 0)
+itemButton.Position = UDim2.new(0, 0, 0, 0)
 itemButton.Text = "item"
-itemButton.TextColor3 = Color3.fromRGB(255,255,255)
-itemButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
+itemButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+itemButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 itemButton.Parent = outerFrame
 
+-- Player Button (directly under itemButton)
 local playerButton = Instance.new("TextButton")
-playerButton.Size = UDim2.new(0.15,0,0.08,0)
-playerButton.Position = UDim2.new(0,0,0,0.2)
+playerButton.Size = itemButton.Size
+playerButton.Position = UDim2.new(
+    itemButton.Position.X.Scale,
+    itemButton.Position.X.Offset,
+    itemButton.Position.Y.Scale,
+    itemButton.Position.Y.Offset + itemButton.Size.Y.Offset + 5 -- 5px spacing
+)
 playerButton.Text = "player"
-playerButton.TextColor3 = Color3.fromRGB(255,255,255)
-playerButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
+playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 playerButton.Parent = outerFrame
 
-
-
+-- Button functionality
 itemButton.Activated:Connect(function()
-	playerframe.Visible = false
-	frame.Visible = true
+    playerframe.Visible = false
+    frame.Visible = true
 end)
 
+playerButton.Activated:Connect(function()
+    playerframe.Visible = true
+    frame.Visible = false
+end)
 
 playerButton.Activated:Connect(function()
 	playerframe.Visible = true
