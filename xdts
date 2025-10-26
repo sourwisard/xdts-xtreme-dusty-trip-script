@@ -20,12 +20,12 @@ outerFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 outerFrame.BorderSizePixel = 0
 outerFrame.Parent = screenGui
 
--- Inner frame (renamed)
-local itemsFrame = Instance.new("Frame")
-itemsFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
-itemsFrame.Position = UDim2.new(0.199, 0.05, 0.1, 0)
-itemsFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-itemsFrame.Parent = outerFrame
+-- Inner frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.8, 0, 0.9, 0)
+frame.Position = UDim2.new(0.199, 0.05, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Parent = outerFrame
 
 -- Toggle button
 local toggleButton = Instance.new("TextButton")
@@ -81,7 +81,7 @@ selectedLabel.TextColor3 = Color3.fromRGB(255,255,255)
 selectedLabel.BackgroundColor3 = Color3.fromRGB(50,50,50)
 selectedLabel.TextScaled = true
 selectedLabel.TextWrapped = true
-selectedLabel.Parent = itemsFrame
+selectedLabel.Parent = frame
 
 -- Left scrolling frame
 local scrollFrameLeft = Instance.new("ScrollingFrame")
@@ -90,7 +90,7 @@ scrollFrameLeft.Position = UDim2.new(0.48,0,0.15,0)
 scrollFrameLeft.CanvasSize = UDim2.new(0,0,0,0)
 scrollFrameLeft.ScrollBarThickness = 8
 scrollFrameLeft.BackgroundColor3 = Color3.fromRGB(35,35,35)
-scrollFrameLeft.Parent = itemsFrame
+scrollFrameLeft.Parent = frame
 
 local listLayoutLeft = Instance.new("UIListLayout")
 listLayoutLeft.SortOrder = Enum.SortOrder.LayoutOrder
@@ -108,7 +108,7 @@ scrollFrameRight.Position = UDim2.new(0.7,0,0.15,0)
 scrollFrameRight.CanvasSize = UDim2.new(0,0,0,0)
 scrollFrameRight.ScrollBarThickness = 8
 scrollFrameRight.BackgroundColor3 = Color3.fromRGB(35,35,35)
-scrollFrameRight.Parent = itemsFrame
+scrollFrameRight.Parent = frame
 
 local listLayoutRight = Instance.new("UIListLayout")
 listLayoutRight.SortOrder = Enum.SortOrder.LayoutOrder
@@ -127,7 +127,7 @@ local function createButton(text, posY)
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(255,255,255)
     btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
-    btn.Parent = itemsFrame
+    btn.Parent = frame
     return btn
 end
 
@@ -147,7 +147,7 @@ yLevelBox.Text = "5"
 yLevelBox.ClearTextOnFocus = false
 yLevelBox.TextColor3 = Color3.fromRGB(255,255,255)
 yLevelBox.BackgroundColor3 = Color3.fromRGB(60,60,60)
-yLevelBox.Parent = itemsFrame
+yLevelBox.Parent = frame
 
 -- Close button
 local closeButton = Instance.new("TextButton")
@@ -166,9 +166,11 @@ end)
 -- Unified exclusion function
 local function shouldExclude(model)
     if typeof(model) == "Instance" then
+        -- Ignore player characters
         if model:IsA("Model") and Players:FindFirstChild(model.Name) then
             return true
         end
+        -- Excluded model name patterns
         local exclusions = {"^model","^boulder","^smallrock","^mountain","^van","^car","^sedan","^trailer","^ramka","^perthyz","^border","^campsite","^cactus","^mutant"}
         local name = model.Name:lower()
         for _, ex in ipairs(exclusions) do
@@ -194,6 +196,7 @@ bringAllButton.MouseButton1Click:Connect(function()
     local hrp = character:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
+    -- Clear previous
     for _, child in ipairs(scrollFrameRight:GetChildren()) do
         if child:IsA("TextLabel") then child:Destroy() end
     end
@@ -283,15 +286,17 @@ end)
 
 -- Update nearby items
 local function updateNearbyItems()
-    while itemsFrame.Parent do
+    while frame.Parent do
         local character = LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
             local hrp = character.HumanoidRootPart
 
+            -- Clear previous buttons
             for _, child in ipairs(scrollFrameLeft:GetChildren()) do
                 if child:IsA("TextButton") then child:Destroy() end
             end
 
+            -- Count models by name
             local modelCounts = {}
             for _, model in ipairs(workspace:GetChildren()) do
                 if model:IsA("Model") and not shouldExclude(model) then
@@ -302,6 +307,7 @@ local function updateNearbyItems()
                 end
             end
 
+            -- Create buttons
             for modelName, count in pairs(modelCounts) do
                 local btn = Instance.new("TextButton")
                 btn.Size = UDim2.new(.9,0,0,50)
@@ -322,7 +328,9 @@ end
 
 spawn(updateNearbyItems)
 
+-------------------------------------------------
 -- Mouse spheres & bring to Y-level logic
+-------------------------------------------------
 local sphere, ySphere = nil, nil
 local sphereLocked = false
 local loopBring = false
@@ -330,6 +338,7 @@ local raycastParams = RaycastParams.new()
 raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 raycastParams.IgnoreWater = true
 
+-- Create spheres
 mouseSphereButton.MouseButton1Click:Connect(function()
     if sphere and sphere.Parent then
         sphere:Destroy()
@@ -370,6 +379,7 @@ end)
 -- Sphere follow + loop bring
 RunService.RenderStepped:Connect(function()
     if sphere and sphere.Parent and ySphere and ySphere.Parent and not sphereLocked then
+        -- Add players to raycast blacklist
         raycastParams.FilterDescendantsInstances = {sphere, ySphere}
         for _, plr in ipairs(Players:GetPlayers()) do
             if plr.Character then
@@ -444,44 +454,3 @@ loopBringButton.MouseButton1Click:Connect(function()
     loopBring = not loopBring
     loopBringButton.Text = loopBring and "Stop Loop" or "Loop Bring"
 end)
-
--- Create Items Button
-local itemsButton = Instance.new("TextButton")
-itemsButton.Name = "ItemsButton"
-itemsButton.Text = "Items"
-itemsButton.Size = UDim2.new(0, 100, 0, 30)
-itemsButton.Position = UDim2.new(0, 0, 0, 0)
-itemsButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-itemsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-itemsButton.Parent = outerFrame
-
--- Create Player Button
-local playerButton = Instance.new("TextButton")
-playerButton.Name = "PlayerButton"
-playerButton.Text = "Player"
-playerButton.Size = UDim2.new(0, 100, 0, 30)
-playerButton.Position = UDim2.new(0, 110, 0, 0)
-playerButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-playerButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-playerButton.Parent = outerFrame
-
--- Create Player Frame
-local playerFrame = Instance.new("Frame")
-playerFrame.Name = "PlayerFrame"
-playerFrame.Size = UDim2.new(0.8, 0, 0.9, 0)
-playerFrame.Position = UDim2.new(0.199, 0.05, 0.1, 0)
-playerFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-playerFrame.Parent = outerFrame
-playerFrame.Visible = false
-
--- Button functionality
-itemsButton.Activated:Connect(function()
-    itemsFrame.Visible = true
-    playerFrame.Visible = false
-end)
-
-playerButton.Activated:Connect(function()
-    playerFrame.Visible = true
-    itemsFrame.Visible = false
-end)
-
