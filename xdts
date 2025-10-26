@@ -442,3 +442,48 @@ loopBringButton.Activated:Connect(function()
     loopBring = not loopBring
     loopBringButton.Text = loopBring and "Stop Loop" or "Loop Bring"
 end)
+
+-----------------------------------------------------------------------------------------------------------
+local playerframe = Instance.new("Frame")
+playerframe.Size = UDim2.new(0.8, 0, 0.9, 0)
+playerframe.Position = UDim2.new(0.199, 0.05, 0.1, 0)
+playerframe.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+playerframe.Parent = outerFrame
+
+local itemButton = Instance.new("TextButton")
+itemButton.Size = UDim2.new(0.15,0,0.08,0)
+itemButton.Position = UDim2.new(0,0.2,0,0)
+itemButton.Text = "Close"
+itemButton.TextColor3 = Color3.fromRGB(255,255,255)
+itemButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
+itemButton.Parent = outerFrame
+
+local playerButton = Instance.new("TextButton")
+itemButton.Size = UDim2.new(0.15,0,0.08,0)
+itemButton.Position = UDim2.new(0,0,0,0)
+itemButton.Text = "Close"
+itemButton.TextColor3 = Color3.fromRGB(255,255,255)
+itemButton.BackgroundColor3 = Color3.fromRGB(80,80,80)
+itemButton.Parent = outerFrame
+
+
+
+itemButton.Activated:Connect(function()
+	playerframe.Visible = false
+	frame.Visible = true
+end)
+
+
+playerButton.Activated:Connect(function()
+	playerframe.Visible = true
+	frame.Visible = false
+end)
+
+
+
+
+
+
+
+
+
