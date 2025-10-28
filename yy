@@ -187,6 +187,16 @@ bringall.TextScaled = true
 bringall.Parent = itemsTab
 Instance.new("UICorner", bringall).CornerRadius = UDim.new(0.02, 0)
 
+local bringwithloop = Instance.new("TextButton")
+bringwithloop.Size = UDim2.fromScale(0.1, 0.1)
+bringwithloop.Position = UDim2.fromScale(.16, 0.21)
+bringwithloop.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+bringwithloop.Text = "bringwithloop"
+bringwithloop.TextColor3 = Color3.fromRGB(255, 255, 255)
+bringwithloop.TextScaled = true
+bringwithloop.Parent = itemsTab
+Instance.new("UICorner", bringwithloop).CornerRadius = UDim.new(0.02, 0)
+
 local bringalltosphere = Instance.new("TextButton")
 bringalltosphere.Size = UDim2.fromScale(0.1, 0.1)
 bringalltosphere.Position = UDim2.fromScale(.05, 0.32)
@@ -247,7 +257,13 @@ end)
 
 -- List of names to include (all lowercase)
 local validNames = {
-	"burger","m4a1","pistol","ammo_crate", "analogclock", "apple", "back", "banana", "bar", "beam", "blade", "bottlecap", "bowlball", "box", "bread", "brick", "candy", "coffin", "comic4", "comic6", "cone", "dice", "dieselcan", "dogtag", "donut", "dynamite", "engine", "flashlight", "food", "fr", "frontbumper", "gear", "glassbottle", "grate", "grill", "heater", "hood", "iron", "ironboard", "key fragment", "landmine", "leftlight", "lever", "licenseplate1", "licenseplate2", "licenseplate4", "loosechair", "muhoboika", "oilcan", "onion", "pan", "paper", "peper", "pin", "pizza", "pot", "pot2", "radiator", "radioactivebarrel", "rearbumper", "rightlight", "shield", "silenced pistol", "silver bar", "siren", "specialradio", "sponge", "spraypaint", "stairs", "swarm grenade", "toilet", "vaz", "vaza", "wallet1", "wallet4", "weight", "wheel", "wing", "woodplanmks"
+	"burger","m4a1","pistol","ammo_crate", "analogclock", "apple", "banana", "bar", "blade", "bottlecap",
+	"bowlball", "box", "bread", "candy", "coffin", "comic4", "comic6", "cone", "dice", "dieselcan", "dogtag", "donut",
+	"dynamite", "engine", "flashlight", "food", "gear", "glassbottle", "grate", "heater",
+	"iron", "ironboard", "key fragment", "landmine", "licenseplate1", "licenseplate2", "licenseplate4",
+	"muhoboika", "oilcan", "onion", "pan", "paper", "peper", "pin", "pizza", "pot", "pot2", "radiator", "radioactivebarrel",
+	"rearbumper", "shield", "silenced pistol", "silver bar", "siren", "specialradio",
+	"swarm grenade", "toilet", "vaz", "vaza", "wallet1", "wallet4",
 }
 
 -- Function to get all valid models in Workspace & ReplicatedStorage
@@ -269,7 +285,7 @@ local function GetValidObjects()
 			-- Only include if it has at least one BasePart and doesn't include the move part
 			local hasValidPart = false
 			for _, descendant in ipairs(obj:GetDescendants()) do
-				if descendant:IsA("BasePart") and descendant.Name ~= movePartName then
+				if descendant:IsA("BasePart") then
 					hasValidPart = true
 					break
 				end
@@ -293,6 +309,11 @@ local function GetValidObjects()
 	end
 
 	return validModels
+end
+
+local validNameSet = {}
+for _, name in ipairs(validNames) do
+	validNameSet[string.lower(name)] = true
 end
 
 
@@ -613,3 +634,124 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 -----------------------------------------------------------------
+local DISTANCE_THRESHOLD = 350
+local FOLLOW_OFFSET = Vector3.new(0, 15, 250)
+local FOLLOW_SPEED = 0.08
+
+--// State
+local following = false
+local processedModels = {}
+local followModels = {}
+
+local function setPrimaryPart(model)
+	if not model:IsA("Model") then return end
+	if model.PrimaryPart then return end
+	for _, obj in ipairs(model:GetDescendants()) do
+		if obj:IsA("BasePart") then
+			model.PrimaryPart = obj
+			break
+		end
+	end
+end
+
+--// Track eligible models
+local function trackModel(model)
+	if not following then return end -- only track when active
+	if not model:IsA("Model") then return end
+	local lowerName = string.lower(model.Name)
+	if not validNameSet[lowerName] then return end
+	if processedModels[model] or followModels[model] then return end
+
+	setPrimaryPart(model)
+	if model.PrimaryPart then
+		processedModels[model] = true
+	end
+end
+
+--// Teleport models close to player if far
+local function checkAndTeleport()
+	for model in pairs(processedModels) do
+		if model and model.PrimaryPart then
+			local distance = (model.PrimaryPart.Position - HumanoidRootPart.Position).Magnitude
+			if distance >= DISTANCE_THRESHOLD then
+				local targetCFrame = HumanoidRootPart.CFrame + FOLLOW_OFFSET
+
+				-- Anchor and reposition
+				for _, part in ipairs(model:GetDescendants()) do
+					if part:IsA("BasePart") then
+						part.Anchored = true
+					end
+				end
+				model:SetPrimaryPartCFrame(targetCFrame)
+
+				followModels[model] = true
+				processedModels[model] = nil
+			end
+		end
+	end
+end
+
+--// Smoothly move anchored models
+local function moveFollowModels()
+	for model in pairs(followModels) do
+		if model and model.PrimaryPart then
+			local current = model.PrimaryPart.CFrame
+			local target = HumanoidRootPart.CFrame + FOLLOW_OFFSET
+			local newCFrame = current:Lerp(target, FOLLOW_SPEED)
+			model:SetPrimaryPartCFrame(newCFrame)
+		else
+			followModels[model] = nil
+		end
+	end
+end
+
+--// Drop all models outward
+local function dropAllModels()
+	following = false
+	local index = 0
+	for model in pairs(followModels) do
+		if model and model.PrimaryPart then
+			local angle = math.rad(index * 30)
+			local offset = Vector3.new(math.cos(angle)*250, 15, math.sin(angle)*250)
+			local dropCFrame = HumanoidRootPart.CFrame + offset
+			model:SetPrimaryPartCFrame(dropCFrame)
+			index += 1
+		end
+	end
+	-- Keep them anchored but reset lists
+	processedModels = {}
+	followModels = {}
+end
+
+--// Toggle follow/drop
+local function toggleFollow()
+	if following then
+		dropAllModels()
+	else
+		following = true
+		-- Fresh scan of all valid models at start
+		for _, model in ipairs(workspace:GetDescendants()) do
+			trackModel(model)
+		end
+	end
+end
+
+--// Auto-track only new models while following
+Workspace.DescendantAdded:Connect(trackModel)
+
+--// Run loop
+RunService.Heartbeat:Connect(function()
+	if following then
+		checkAndTeleport()
+		moveFollowModels()
+	end
+end)
+
+bringwithloop.Activated:Connect(function()
+	toggleFollow()
+	if following == true then
+		bringwithloop.Text = "looping..."
+	else
+		bringwithloop.Text = "bringwithloop"
+	end
+end)
