@@ -156,6 +156,27 @@ toggleButton.TextScaled = true
 toggleButton.Parent = itemsTab
 Instance.new("UICorner", toggleButton).CornerRadius = UDim.new(0.02, 0)
 
+local offsetspheres = Instance.new("TextBox")
+offsetspheres.Size = UDim2.fromScale(0.1, 0.1)
+offsetspheres.Position = UDim2.fromScale(.25, 0.1)
+offsetspheres.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+offsetspheres.Text = "5"
+offsetspheres.TextColor3 = Color3.fromRGB(255, 255, 255)
+offsetspheres.TextScaled = true
+offsetspheres.Parent = itemsTab
+offsetspheres.ClearTextOnFocus = false
+Instance.new("UICorner", offsetspheres).CornerRadius = UDim.new(0.02, 0)
+
+local offsetlabel = Instance.new("TextLabel")
+offsetlabel.Size = UDim2.fromScale(0.1, 0.1)
+offsetlabel.Position = UDim2.fromScale(.15, 0.1)
+offsetlabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+offsetlabel.Text = " y offset ="
+offsetlabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+offsetlabel.TextScaled = true
+offsetlabel.Parent = itemsTab
+Instance.new("UICorner", offsetlabel).CornerRadius = UDim.new(0.02, 0)
+
 local bringall = Instance.new("TextButton")
 bringall.Size = UDim2.fromScale(0.1, 0.1)
 bringall.Position = UDim2.fromScale(.05, 0.21)
@@ -166,9 +187,19 @@ bringall.TextScaled = true
 bringall.Parent = itemsTab
 Instance.new("UICorner", bringall).CornerRadius = UDim.new(0.02, 0)
 
+local bringalltosphere = Instance.new("TextButton")
+bringalltosphere.Size = UDim2.fromScale(0.1, 0.1)
+bringalltosphere.Position = UDim2.fromScale(.05, 0.32)
+bringalltosphere.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+bringalltosphere.Text = "bringalltosphere"
+bringalltosphere.TextColor3 = Color3.fromRGB(255, 255, 255)
+bringalltosphere.TextScaled = true
+bringalltosphere.Parent = itemsTab
+Instance.new("UICorner", bringalltosphere).CornerRadius = UDim.new(0.02, 0)
+
 local bringallof1 = Instance.new("TextButton")
 bringallof1.Size = UDim2.fromScale(0.1, 0.1)
-bringallof1.Position = UDim2.fromScale(.05, 0.32)
+bringallof1.Position = UDim2.fromScale(.05, 0.43)
 bringallof1.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 bringallof1.Text = "bringallof1"
 bringallof1.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -178,7 +209,7 @@ Instance.new("UICorner", bringallof1).CornerRadius = UDim.new(0.02, 0)
 
 local bringallselectedtosphere = Instance.new("TextButton")
 bringallselectedtosphere.Size = UDim2.fromScale(0.1, 0.1)
-bringallselectedtosphere.Position = UDim2.fromScale(.05, 0.43)
+bringallselectedtosphere.Position = UDim2.fromScale(.05, 0.54)
 bringallselectedtosphere.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 bringallselectedtosphere.Text = "tp selected to sphere"
 bringallselectedtosphere.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -188,7 +219,7 @@ Instance.new("UICorner", bringallselectedtosphere).CornerRadius = UDim.new(0.02,
 
 local togglemobileb = Instance.new("TextButton")
 togglemobileb.Size = UDim2.fromScale(0.1, 0.1)
-togglemobileb.Position = UDim2.fromScale(.16, 0.1)
+togglemobileb.Position = UDim2.fromScale(.05, 0.65)
 togglemobileb.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 togglemobileb.Text = "lock spheres"
 togglemobileb.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -331,13 +362,23 @@ local ySphere
 local yOffset = 5
 local sphereLocked = false
 
+offsetspheres.FocusLost:Connect(function(enterPressed)
+	local newVal = tonumber(offsetspheres.Text)
+	if newVal then
+		yOffset = newVal
+		print("[SphereUI] Y offset set to:", yOffset)
+	else
+		offsetspheres.Text = tostring(yOffset)
+	end
+end)
+
+-- Toggle spheres on/off
 toggleButton.Activated:Connect(function()
 	if spheresActive then
-		-- Stop updates first
+		-- Turn off spheres
 		spheresActive = false
-		sphereLocked = false  -- unlock automatically when removing
+		sphereLocked = false
 
-		-- Fully delete spheres
 		if mainSphere then
 			mainSphere:Destroy()
 			mainSphere = nil
@@ -347,7 +388,7 @@ toggleButton.Activated:Connect(function()
 			ySphere = nil
 		end
 	else
-		-- Create new spheres and enable updates
+		-- Create main sphere
 		mainSphere = Instance.new("Part")
 		mainSphere.Shape = Enum.PartType.Ball
 		mainSphere.Size = Vector3.new(0.5, 0.5, 0.5)
@@ -357,6 +398,7 @@ toggleButton.Activated:Connect(function()
 		mainSphere.CanCollide = false
 		mainSphere.Parent = workspace
 
+		-- Create Y-offset sphere
 		ySphere = Instance.new("Part")
 		ySphere.Shape = Enum.PartType.Ball
 		ySphere.Size = Vector3.new(0.5, 0.5, 0.5)
@@ -377,15 +419,15 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		sphereLocked = not sphereLocked
 	end
 end)
---mobile support
+
+-- Mobile lock toggle
 lockspheres.Activated:Connect(function()
 	sphereLocked = not sphereLocked
 end)
 
-
--- Update spheres only when active
+-- Update spheres every frame
 RunService.RenderStepped:Connect(function()
-	if not spheresActive or not mainSphere or not ySphere or sphereLocked then
+	if not spheresActive or not mainSphere or not ySphere then
 		return
 	end
 
@@ -400,9 +442,13 @@ RunService.RenderStepped:Connect(function()
 	local rayResult = workspace:Raycast(ray.Origin, ray.Direction * 500, params)
 	local hitPos = rayResult and rayResult.Position or (ray.Origin + ray.Direction * 5)
 
-	mainSphere.Position = hitPos
-	ySphere.Position = hitPos + Vector3.new(0, yOffset, 0)
+	-- ✅ Only stop mainSphere when locked; ySphere still follows
+	if not sphereLocked then
+		mainSphere.Position = hitPos
+	end
+	ySphere.Position = mainSphere.Position + Vector3.new(0, yOffset, 0)
 end)
+
 --------------------------------------------------------end of sphere teleport stuffs
 -------------------------------------------------------------------------------
 -- BRING ALL BUTTON FUNCTIONALITY (sets PrimaryPart automatically)
@@ -489,6 +535,70 @@ bringallof1.Activated:Connect(function()
 end)
 
 
+
+-------------------------------------------------------------------------------
+-- BRING ALL OF SELECTED ITEM (sets PrimaryPart automatically)
+-------------------------------------------------------------------------------
+local bringingAll = false
+
+bringalltosphere.Activated:Connect(function()
+	bringingAll = not bringingAll
+
+	if bringingAll then
+		print("[BringAll] Auto bring started.")
+	else
+		print("[BringAll] Auto bring stopped.")
+
+		-- Unanchor everything when stopped
+		local models = GetValidObjects()
+		for _, obj in ipairs(models) do
+			for _, part in ipairs(obj:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.Anchored = false
+				end
+			end
+		end
+		return
+	end
+
+	task.spawn(function()
+		while bringingAll do
+			local models = GetValidObjects()
+			if #models == 0 then
+				warn("No valid objects found to bring.")
+				task.wait(1)
+				continue
+			end
+
+			local broughtCount = 0
+			for _, obj in ipairs(models) do
+				-- Find or assign a primary part
+				local primaryPart = obj.PrimaryPart
+				if not primaryPart then
+					for _, part in ipairs(obj:GetDescendants()) do
+						if part:IsA("BasePart") then
+							obj.PrimaryPart = part
+							primaryPart = part
+							break
+						end
+					end
+				end
+
+				-- Teleport if found
+				if primaryPart and ySphere then
+					local targetPos = ySphere.Position
+					primaryPart.Anchored = true
+					obj:SetPrimaryPartCFrame(CFrame.new(targetPos))
+					broughtCount += 1
+				end
+			end
+
+			print("[BringAll] Brought " .. broughtCount .. " items to player.")
+			task.wait(1) -- repeat every second
+		end
+	end)
+end)
+
 --------------------------------------------------------------------
 -- INSERT KEY TOGGLE UI VISIBILITY
 --------------------------------------------------------------------
@@ -501,3 +611,4 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		outerFrame.Visible = not uiVisible
 	end
 end)
+
