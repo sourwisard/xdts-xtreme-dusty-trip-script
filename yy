@@ -115,6 +115,18 @@ selectedItemLabel.Parent = itemsTab
 Instance.new("UICorner", selectedItemLabel).CornerRadius = UDim.new(0.02, 0)
 
 --// Close button
+
+local areyousure = Instance.new("Frame")
+areyousure.Name = "areyousure"
+areyousure.Size = UDim2.fromScale(0.6, 0.7)
+areyousure.Position = UDim2.fromScale(0.2, 0.15)
+areyousure.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+areyousure.BorderSizePixel = 0
+areyousure.Visible = false
+areyousure.Parent = screenGui
+areyousure.ZIndex = 1000
+Instance.new("UICorner", areyousure).CornerRadius = UDim.new(0.02, 0)
+
 local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.fromScale(0.1, 0.1)
 closeButton.Position = UDim2.fromScale(0.9, 0)
@@ -125,8 +137,54 @@ closeButton.TextScaled = true
 closeButton.Parent = outerFrame
 Instance.new("UICorner", closeButton).CornerRadius = UDim.new(0.03, 0)
 closeButton.Activated:Connect(function()
+	areyousure.Visible = true
+	outerFrame.Visible = false
+end)
+
+local warning = Instance.new("TextLabel")
+warning.Size = UDim2.fromScale(0.7, 0.5)
+warning.Position = UDim2.fromScale(.15, 0.3)
+warning.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+warning.Text = "closing the script can and will break it"
+warning.TextColor3 = Color3.fromRGB(155, 0, 0)
+warning.TextScaled = true
+warning.TextWrapped = true
+warning.TextScaled = true
+warning.ZIndex = 1001
+warning.Parent = areyousure
+Instance.new("UICorner", warning).CornerRadius = UDim.new(0.02, 0)
+
+local yes = Instance.new("TextButton")
+yes.Size = UDim2.fromScale(0.3, 0.2)
+yes.Position = UDim2.fromScale(.52, 0.1)
+yes.BackgroundColor3 = Color3.fromRGB(150, 50, 50)
+yes.Text = "yes"
+yes.TextColor3 = Color3.fromRGB(255, 255, 255)
+yes.TextScaled = true
+yes.Parent = areyousure
+yes.ZIndex = 1001
+Instance.new("UICorner", yes).CornerRadius = UDim.new(0.02, 0)
+
+local no = Instance.new("TextButton")
+no.Size = UDim2.fromScale(0.3, 0.2)
+no.Position = UDim2.fromScale(.18, 0.1)
+no.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+no.Text = "no"
+no.TextColor3 = Color3.fromRGB(255, 255, 255)
+no.TextScaled = true
+no.Parent = areyousure
+no.ZIndex = 1001
+Instance.new("UICorner", no).CornerRadius = UDim.new(0.02, 0)
+
+yes.Activated:Connect(function()
 	screenGui:Destroy()
 end)
+
+no.Activated:Connect(function()
+	areyousure.Visible = false
+	outerFrame.Visible = true
+end)
+
 
 ----------------------------------------------------------------------------------- Visibility toggle button
 local visibilityButton = Instance.new("TextButton")
