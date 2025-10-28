@@ -849,11 +849,10 @@ end
 -- Raycast on left click
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		castRay()
 	end
 end)
-
 
 local frameVisible = true
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
