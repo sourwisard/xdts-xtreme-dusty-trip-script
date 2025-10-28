@@ -160,7 +160,7 @@ local offsetspheres = Instance.new("TextBox")
 offsetspheres.Size = UDim2.fromScale(0.1, 0.1)
 offsetspheres.Position = UDim2.fromScale(.25, 0.1)
 offsetspheres.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-offsetspheres.Text = "5"
+offsetspheres.Text = "2"
 offsetspheres.TextColor3 = Color3.fromRGB(255, 255, 255)
 offsetspheres.TextScaled = true
 offsetspheres.Parent = itemsTab
@@ -359,7 +359,7 @@ end)
 local spheresActive = false
 local mainSphere
 local ySphere
-local yOffset = 5
+local yOffset = 2
 local sphereLocked = false
 
 offsetspheres.FocusLost:Connect(function(enterPressed)
@@ -612,3 +612,4 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
+-----------------------------------------------------------------
