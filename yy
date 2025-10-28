@@ -290,7 +290,7 @@ end)
 local validNames = {
 	"burger","m4a1","pistol","ammo_crate", "analogclock", "bottlecap",
 	"bowlball", "comic4", "comic6", "cone", "dice",
-	"dynamite", "gear",
+	"dynamite", "gear","C4","Katana",
 	"key fragment", "landmine",
 	"pan", "pot", "pot2", "radioactivebarrel",
 	"silenced pistol", "silver bar", "specialradio",
@@ -851,15 +851,5 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		castRay()
-	end
-end)
-
-local frameVisible = true
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.RightAlt then
-		frameVisible = not frameVisible
-		outerFrame.Visible = frameVisible
-		visibilityButton.Visible = frameVisible
 	end
 end)
