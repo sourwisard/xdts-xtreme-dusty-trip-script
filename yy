@@ -293,7 +293,7 @@ local validNames = {
 	"dynamite", "gear",
 	"key fragment", "landmine",
 	"pan", "pot", "pot2", "radioactivebarrel",
-	"rearbumper", "silenced pistol", "silver bar", "specialradio",
+	"silenced pistol", "silver bar", "specialradio",
 	"swarm grenade", "vaz", "vaza", "wallet1", "wallet4","sword"
 }
 
