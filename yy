@@ -291,9 +291,9 @@ local validNames = {
 	"burger","m4a1","pistol","ammo_crate", "analogclock", "bottlecap",
 	"bowlball", "comic4", "comic6", "cone", "dice",
 	"dynamite", "gear","C4","Katana",
-	"key fragment", "landmine",
+	"key fragment", "landmine","Water Gun","Sticky Bomb","Fake Pistol","AK47","DogTag",
 	"pan", "pot", "pot2", "radioactivebarrel",
-	"silenced pistol", "silver bar", "specialradio",
+	"silenced pistol", "silver bar", "specialradio","gold bar",
 	"swarm grenade", "vaz", "vaza", "wallet1", "wallet4","sword"
 }
 
