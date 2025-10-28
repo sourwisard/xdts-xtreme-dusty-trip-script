@@ -63,7 +63,7 @@ local tabs = {
 	{ name = "Main", target = mainTab },
 	{ name = "Items", target = itemsTab },
 	{ name = "Players", target = playerTab },
-	{ name = "Placeholder1", target = placeholder1 },
+	{ name = "get model name", target = placeholder1 },
 	{ name = "Placeholder2", target = placeholder2 },
 	{ name = "Placeholder3", target = placeholder3 },
 }
@@ -130,8 +130,8 @@ end)
 
 ----------------------------------------------------------------------------------- Visibility toggle button
 local visibilityButton = Instance.new("TextButton")
-visibilityButton.Size = UDim2.fromScale(0.1, 0.1)
-visibilityButton.Position = UDim2.fromScale(.5, 0) -- top-left corner
+visibilityButton.Size = UDim2.fromScale(0.05, 0.1)
+visibilityButton.Position = UDim2.fromScale(.4, 0) -- top-left corner
 visibilityButton.Text = "Hide Frame"
 visibilityButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 visibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -139,10 +139,41 @@ visibilityButton.TextScaled = true
 visibilityButton.Parent = screenGui
 Instance.new("UICorner", visibilityButton).CornerRadius = UDim.new(0.03, 0)
 visibilityButton.Visible = true
+visibilityButton.ZIndex = 999
 visibilityButton.Activated:Connect(function()
 	outerFrame.Visible = not outerFrame.Visible
 	visibilityButton.Text = outerFrame.Visible and "Hide Frame" or "Show Frame"
 end)
+
+local dragging = false
+local dragStartPos
+local startPos
+
+visibilityButton.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStartPos = input.Position
+		startPos = visibilityButton.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+visibilityButton.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		if dragging then
+			local delta = input.Position - dragStartPos
+			visibilityButton.Position = UDim2.new(
+				startPos.X.Scale, startPos.X.Offset + delta.X,
+				startPos.Y.Scale, startPos.Y.Offset + delta.Y
+			)
+		end
+	end
+end)
+
 ------------------------------------------------------------------------------------end of visibility toggle button
 
 ------------------------------------------------------------------------------------item tab buttons
@@ -257,13 +288,13 @@ end)
 
 -- List of names to include (all lowercase)
 local validNames = {
-	"burger","m4a1","pistol","ammo_crate", "analogclock", "apple", "banana", "bar", "blade", "bottlecap",
-	"bowlball", "box", "bread", "candy", "coffin", "comic4", "comic6", "cone", "dice", "dieselcan", "dogtag", "donut",
-	"dynamite", "engine", "flashlight", "food", "gear", "glassbottle", "grate", "heater",
-	"iron", "ironboard", "key fragment", "landmine", "licenseplate1", "licenseplate2", "licenseplate4",
-	"muhoboika", "oilcan", "onion", "pan", "paper", "peper", "pin", "pizza", "pot", "pot2", "radiator", "radioactivebarrel",
-	"rearbumper", "shield", "silenced pistol", "silver bar", "siren", "specialradio",
-	"swarm grenade", "toilet", "vaz", "vaza", "wallet1", "wallet4",
+	"burger","m4a1","pistol","ammo_crate", "analogclock", "bottlecap",
+	"bowlball", "comic4", "comic6", "cone", "dice",
+	"dynamite", "gear",
+	"key fragment", "landmine",
+	"pan", "pot", "pot2", "radioactivebarrel",
+	"rearbumper", "silenced pistol", "silver bar", "specialradio",
+	"swarm grenade", "vaz", "vaza", "wallet1", "wallet4","sword"
 }
 
 -- Function to get all valid models in Workspace & ReplicatedStorage
@@ -753,5 +784,83 @@ bringwithloop.Activated:Connect(function()
 		bringwithloop.Text = "looping..."
 	else
 		bringwithloop.Text = "bringwithloop"
+	end
+end)
+
+
+-----------------------------------------------
+
+local mouse = plr:GetMouse()
+
+local RaycastGUI = Instance.new("TextBox")
+RaycastGUI.Size = UDim2.fromScale(0.8, 0.8)
+RaycastGUI.Position = UDim2.fromScale(0.1, 0.1)
+RaycastGUI.Text = ""
+RaycastGUI.ClearTextOnFocus = false
+RaycastGUI.TextScaled = false -- disable auto scaling
+RaycastGUI.TextSize = 18        -- smaller text
+RaycastGUI.TextWrapped = true   -- enable wrapping
+RaycastGUI.TextXAlignment = Enum.TextXAlignment.Left
+RaycastGUI.TextYAlignment = Enum.TextYAlignment.Top
+RaycastGUI.TextColor3 = Color3.new(1, 1, 1)
+RaycastGUI.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+RaycastGUI.BackgroundTransparency = 0.5
+RaycastGUI.Parent = placeholder1
+
+
+
+-- Table to store hit model names
+local hitModels = {}
+
+-- Function to get the top-level model of a part
+local function getModel(part)
+	if not part then return nil end
+	local model = part:FindFirstAncestorOfClass("Model")
+	if model then
+		return model.Name
+	end
+	return nil
+end
+
+-- Function to perform raycast
+local function castRay()
+	local character = plr.Character
+	if not character then return end
+	local head = character:FindFirstChild("Head")
+	if not head then return end
+
+	local origin = head.Position
+	local direction = (mouse.Hit.Position - origin).Unit * 1000 -- Ray length 1000 studs
+
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = {character} -- Ignore self
+	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+	local result = workspace:Raycast(origin, direction, raycastParams)
+	if result and result.Instance then
+		local modelName = getModel(result.Instance)
+		if modelName and not table.find(hitModels, modelName) then
+			table.insert(hitModels, modelName)
+			RaycastGUI.Text = '"' .. table.concat(hitModels, '","') .. '"'
+		end
+	end
+end
+
+-- Raycast on left click
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		castRay()
+	end
+end)
+
+
+local frameVisible = true
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.KeyCode == Enum.KeyCode.RightAlt then
+		frameVisible = not frameVisible
+		outerFrame.Visible = frameVisible
+		visibilityButton.Visible = frameVisible
 	end
 end)
