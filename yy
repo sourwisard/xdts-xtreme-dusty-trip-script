@@ -296,6 +296,16 @@ bringalltosphere.TextScaled = true
 bringalltosphere.Parent = itemsTab
 Instance.new("UICorner", bringalltosphere).CornerRadius = UDim.new(0.02, 0)
 
+local unanchor = Instance.new("TextButton")
+unanchor.Size = UDim2.fromScale(0.1, 0.1)
+unanchor.Position = UDim2.fromScale(.16, 0.32)
+unanchor.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+unanchor.Text = "unanchor"
+unanchor.TextColor3 = Color3.fromRGB(255, 255, 255)
+unanchor.TextScaled = true
+unanchor.Parent = itemsTab
+Instance.new("UICorner", unanchor).CornerRadius = UDim.new(0.02, 0)
+
 local bringallof1 = Instance.new("TextButton")
 bringallof1.Size = UDim2.fromScale(0.1, 0.1)
 bringallof1.Position = UDim2.fromScale(.05, 0.43)
@@ -910,4 +920,30 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		castRay()
 	end
+end)
+
+--// 👇 Insert your validNames list here
+
+--// Convert to lowercase lookup table for fast matching
+local validNameSet = {}
+for _, name in ipairs(validNames) do
+	validNameSet[string.lower(name)] = true
+end
+
+--// Function to unanchor all parts in valid models
+local function unanchorValidModels()
+	for _, model in ipairs(workspace:GetDescendants()) do
+		if model:IsA("Model") and validNameSet[string.lower(model.Name)] then
+			for _, part in ipairs(model:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.Anchored = false
+				end
+			end
+		end
+	end
+end
+
+
+unanchor.Activated:Connect(function()
+	unanchorValidModels()
 end)
