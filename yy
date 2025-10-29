@@ -9,6 +9,7 @@ local Character = plr.Character or plr.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
 --// Main ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -290,7 +291,7 @@ local bringalltosphere = Instance.new("TextButton")
 bringalltosphere.Size = UDim2.fromScale(0.1, 0.1)
 bringalltosphere.Position = UDim2.fromScale(.05, 0.32)
 bringalltosphere.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-bringalltosphere.Text = "bringalltosphere"
+bringalltosphere.Text = "cframelooptosphere"
 bringalltosphere.TextColor3 = Color3.fromRGB(255, 255, 255)
 bringalltosphere.TextScaled = true
 bringalltosphere.Parent = itemsTab
@@ -298,9 +299,9 @@ Instance.new("UICorner", bringalltosphere).CornerRadius = UDim.new(0.02, 0)
 
 local unanchor = Instance.new("TextButton")
 unanchor.Size = UDim2.fromScale(0.1, 0.1)
-unanchor.Position = UDim2.fromScale(.16, 0.32)
+unanchor.Position = UDim2.fromScale(.55, 0.85)
 unanchor.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-unanchor.Text = "unanchor"
+unanchor.Text = "unanchorall"
 unanchor.TextColor3 = Color3.fromRGB(255, 255, 255)
 unanchor.TextScaled = true
 unanchor.Parent = itemsTab
@@ -310,7 +311,7 @@ local bringallof1 = Instance.new("TextButton")
 bringallof1.Size = UDim2.fromScale(0.1, 0.1)
 bringallof1.Position = UDim2.fromScale(.05, 0.43)
 bringallof1.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-bringallof1.Text = "bringallof1"
+bringallof1.Text = "bringallofselected"
 bringallof1.TextColor3 = Color3.fromRGB(255, 255, 255)
 bringallof1.TextScaled = true
 bringallof1.Parent = itemsTab
@@ -356,13 +357,13 @@ end)
 
 -- List of names to include (all lowercase)
 local validNames = {
-	"burger","m4a1","pistol","ammo_crate", "analogclock", "bottlecap",
-	"bowlball", "comic4", "comic6", "cone", "dice",
-	"dynamite", "gear","C4","Katana",
-	"key fragment", "landmine","Water Gun","Sticky Bomb","Fake Pistol","AK47","DogTag",
-	"pan", "pot", "pot2", "radioactivebarrel",
-	"silenced pistol", "silver bar", "specialradio","gold bar",
-	"swarm grenade", "vaz", "vaza", "wallet1", "wallet4","sword"
+	"burger","m4a1","pistol",
+	"bowlball", "cone",
+	"dynamite",
+	"landmine","Water Gun","Sticky Bomb","Fake Pistol","AK47","DogTag",
+	"radioactivebarrel",
+	"silenced pistol", "silver bar" ,"gold bar",
+	"swarm grenade", "vaz", "vaza",
 }
 
 -- Function to get all valid models in Workspace & ReplicatedStorage
@@ -664,22 +665,6 @@ local bringingAll = false
 bringalltosphere.Activated:Connect(function()
 	bringingAll = not bringingAll
 
-	if bringingAll then
-		print("[BringAll] Auto bring started.")
-	else
-		print("[BringAll] Auto bring stopped.")
-
-		-- Unanchor everything when stopped
-		local models = GetValidObjects()
-		for _, obj in ipairs(models) do
-			for _, part in ipairs(obj:GetDescendants()) do
-				if part:IsA("BasePart") then
-					part.Anchored = false
-				end
-			end
-		end
-		return
-	end
 
 	task.spawn(function()
 		while bringingAll do
@@ -707,7 +692,7 @@ bringalltosphere.Activated:Connect(function()
 				-- Teleport if found
 				if primaryPart and ySphere then
 					local targetPos = ySphere.Position
-					primaryPart.Anchored = true
+					primaryPart.Anchored = false
 					obj:SetPrimaryPartCFrame(CFrame.new(targetPos))
 					broughtCount += 1
 				end
@@ -947,3 +932,4 @@ end
 unanchor.Activated:Connect(function()
 	unanchorValidModels()
 end)
+----------------------------------------------------------------------------------unanchorall
