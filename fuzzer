@@ -447,7 +447,7 @@ local function stopFuzzer()
 		-- no direct cancel necessary; loop will break on stopToken
 		fuzzerTask = nil
 	end
-	running = fals\
+	running = false
 	appendLog("[Fuzzer] Stop requested", Color3.fromRGB(200,160,60))
 end
 
