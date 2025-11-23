@@ -60,7 +60,7 @@ end)
 
 local glaze = Instance.new("TextLabel")
 glaze.Name = "NANO IS THE BEST"
-glaze.Size = UDim2.new(1, 0, .88, 0)
+glaze.Size = UDim2.new(.948, 0, .88, 0)
 glaze.Position = UDim2.fromScale(0, 0)
 glaze.BackgroundColor3 = Color3.fromRGB(200, 10, 10)
 glaze.Text = "NANO IS THE BEST"
@@ -69,7 +69,6 @@ glaze.Font = Enum.Font.GothamBold
 glaze.Parent = mainbar
 glaze.TextScaled = true
 glaze.ZIndex = 11
-glaze.Transparency = .9
 
 
 
@@ -86,8 +85,8 @@ mainframe.Parent = mainbar
 
 local x = Instance.new("TextButton")
 x.Name = "X"
-x.Size = UDim2.new(0, 29, 0, 23)
-x.Position = UDim2.fromScale(.94, .02)
+x.Size = UDim2.new(0, 30, .88, 0)
+x.Position = UDim2.fromScale(.94, 0)
 x.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
 x.Text = "X"
 x.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -134,7 +133,7 @@ textlabel.Name = "no"
 textlabel.Size = UDim2.new(1, 0, 0.2, 0)
 textlabel.Position = UDim2.fromScale(0, .1)
 textlabel.BackgroundColor3 = Color3.fromRGB(200, 10, 10)
-textlabel.Text = "NANO IS THE BEST?"
+textlabel.Text = "IS NANO IS THE BEST?"
 textlabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 textlabel.Font = Enum.Font.GothamBold	
 textlabel.Parent = sourdope
