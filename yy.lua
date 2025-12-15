@@ -1,4 +1,3 @@
---// Services
 local Players = game:GetService("Players")
 local plr = Players.LocalPlayer
 local PlayerGui = game:GetService("CoreGui") or plr.PlayerGui
@@ -11,14 +10,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
---// Main ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ValidObjectsUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.Parent = PlayerGui
 
---// Outer Frame
 local outerFrame = Instance.new("Frame")
 outerFrame.Size = UDim2.fromScale(0.6, 0.7)
 outerFrame.Position = UDim2.fromScale(0.2, 0.15)
@@ -27,7 +24,7 @@ outerFrame.BorderSizePixel = 0
 outerFrame.Parent = screenGui
 Instance.new("UICorner", outerFrame).CornerRadius = UDim.new(0.03, 0)
 outerFrame.Visible = true
---// Helper function to hide all tabs
+
 local function hideAllTabs()
 	for _, frame in ipairs(outerFrame:GetChildren()) do
 		if frame:IsA("Frame") and frame.Name:find("TabFrame") then
@@ -36,7 +33,6 @@ local function hideAllTabs()
 	end
 end
 
---// Create Tab Frame helper
 local function createTabFrame(name)
 	local frame = Instance.new("Frame")
 	frame.Name = name .. "TabFrame"
@@ -50,7 +46,7 @@ local function createTabFrame(name)
 	return frame
 end
 
---// Tabs
+
 local mainTab = createTabFrame("Main")
 local itemsTab = createTabFrame("Items")
 local playerTab = createTabFrame("Players")
@@ -59,7 +55,6 @@ local placeholder2 = createTabFrame("Placeholder2")
 local placeholder3 = createTabFrame("Placeholder3")
 mainTab.Visible = true
 
---// Tab Buttons
 local tabs = {
 	{ name = "Main", target = mainTab },
 	{ name = "Items", target = itemsTab },
@@ -86,7 +81,6 @@ for i, info in ipairs(tabs) do
 	end)
 end
 
---// ITEMS TAB: scrolling frame (works now)
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.fromScale(0.3, 0.96)
 scrollFrame.Position = UDim2.fromScale(0.7, 0.02)
@@ -115,7 +109,6 @@ selectedItemLabel.Text = "Selected: None"
 selectedItemLabel.Parent = itemsTab
 Instance.new("UICorner", selectedItemLabel).CornerRadius = UDim.new(0.02, 0)
 
---// Close button
 
 local areyousure = Instance.new("Frame")
 areyousure.Name = "areyousure"
@@ -355,18 +348,10 @@ togglemobileb.Activated:Connect(function()
 end)
 --------------------------------------------------------end of lockspheres
 
--- List of names to include (all lowercase)
 local validNames = {
-	"burger","m4a1","pistol",
-	"bowlball", "cone",
-	"dynamite",
-	"landmine","Water Gun","Sticky Bomb","Fake Pistol","AK47","DogTag",
-	"radioactivebarrel",
-	"silenced pistol", "silver bar" ,"gold bar",
-	"swarm grenade", "vaz", "vaza",
+	"burger","m4a1","pistol","bowlball", "cone","dynamite","landmine","Water Gun","Sticky Bomb","Fake Pistol","AK47","DogTag","radioactivebarrel","silenced pistol", "silver bar" ,"gold bar","swarm grenade", "vaz", "vaza"
 }
 
--- Function to get all valid models in Workspace & ReplicatedStorage
 local function GetValidObjects()
 	local validModels = {}
 
@@ -382,7 +367,6 @@ local function GetValidObjects()
 
 	local function scan(obj)
 		if obj:IsA("Model") and obj ~= plr.Character and NameMatches(obj.Name) then
-			-- Only include if it has at least one BasePart and doesn't include the move part
 			local hasValidPart = false
 			for _, descendant in ipairs(obj:GetDescendants()) do
 				if descendant:IsA("BasePart") then
@@ -395,8 +379,6 @@ local function GetValidObjects()
 				table.insert(validModels, obj)
 			end
 		end
-
-		-- Only scan children in workspace (not ReplicatedStorage)
 		for _, child in ipairs(obj:GetChildren()) do
 			if child:IsA("Model") then
 				scan(child)
@@ -418,17 +400,13 @@ end
 
 
 
--- Auto-refresh scroll frame
 task.spawn(function()
 	while screenGui.Parent do
-		-- Clear old buttons
 		for _, child in ipairs(scrollFrame:GetChildren()) do
 			if child:IsA("TextButton") then
 				child:Destroy()
 			end
 		end
-
-		-- Get valid objects once per refresh
 		local models = GetValidObjects()
 		local counts = {}
 		for _, m in ipairs(models) do
@@ -436,14 +414,12 @@ task.spawn(function()
 			counts[lname] = (counts[lname] or 0) + 1
 		end
 
-		-- Sort names
 		local sortedNames = {}
 		for name in pairs(counts) do
 			table.insert(sortedNames, name)
 		end
 		table.sort(sortedNames)
 
-		-- Create buttons
 		for _, name in ipairs(sortedNames) do
 			local displayText = string.format("%s (x%d)", name, counts[name])
 			local button = Instance.new("TextButton")
@@ -456,7 +432,6 @@ task.spawn(function()
 			button.Parent = scrollFrame
 			Instance.new("UICorner", button).CornerRadius = UDim.new(0.02, 0)
 
-			-- Hover effect
 			button.MouseEnter:Connect(function()
 				TweenService:Create(button, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(80, 80, 80)}):Play()
 			end)
@@ -464,7 +439,6 @@ task.spawn(function()
 				TweenService:Create(button, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
 			end)
 
-			-- Select item on click
 			button.MouseButton1Click:Connect(function()
 				selectedItemLabel.Text = "Selected: " .. name .. " (x" .. counts[name] .. ")"
 			end)
@@ -493,10 +467,8 @@ offsetspheres.FocusLost:Connect(function(enterPressed)
 	end
 end)
 
--- Toggle spheres on/off
 toggleButton.Activated:Connect(function()
 	if spheresActive then
-		-- Turn off spheres
 		spheresActive = false
 		sphereLocked = false
 
@@ -509,7 +481,7 @@ toggleButton.Activated:Connect(function()
 			ySphere = nil
 		end
 	else
-		-- Create main sphere
+		
 		mainSphere = Instance.new("Part")
 		mainSphere.Shape = Enum.PartType.Ball
 		mainSphere.Size = Vector3.new(0.5, 0.5, 0.5)
@@ -519,7 +491,6 @@ toggleButton.Activated:Connect(function()
 		mainSphere.CanCollide = false
 		mainSphere.Parent = workspace
 
-		-- Create Y-offset sphere
 		ySphere = Instance.new("Part")
 		ySphere.Shape = Enum.PartType.Ball
 		ySphere.Size = Vector3.new(0.5, 0.5, 0.5)
@@ -533,7 +504,7 @@ toggleButton.Activated:Connect(function()
 	end
 end)
 
--- Lock toggle with "P"
+
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
 	if input.KeyCode == Enum.KeyCode.P and spheresActive then
@@ -541,12 +512,10 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
--- Mobile lock toggle
 lockspheres.Activated:Connect(function()
 	sphereLocked = not sphereLocked
 end)
 
--- Update spheres every frame
 RunService.RenderStepped:Connect(function()
 	if not spheresActive or not mainSphere or not ySphere then
 		return
@@ -572,7 +541,7 @@ end)
 
 --------------------------------------------------------end of sphere teleport stuffs
 -------------------------------------------------------------------------------
--- BRING ALL BUTTON FUNCTIONALITY (sets PrimaryPart automatically)
+-- bring all stuffs
 -------------------------------------------------------------------------------
 
 bringall.Activated:Connect(function()
@@ -610,7 +579,7 @@ bringall.Activated:Connect(function()
 end)
 
 -------------------------------------------------------------------------------
--- BRING ALL OF SELECTED ITEM (sets PrimaryPart automatically)
+-- bring all of selected stuffs
 -------------------------------------------------------------------------------
 
 bringallof1.Activated:Connect(function()
@@ -658,7 +627,7 @@ end)
 
 
 -------------------------------------------------------------------------------
--- BRING ALL OF SELECTED ITEM (sets PrimaryPart automatically)
+-- bring all loop
 -------------------------------------------------------------------------------
 local bringingAll = false
 
@@ -722,7 +691,6 @@ local DISTANCE_THRESHOLD = 350
 local FOLLOW_OFFSET = Vector3.new(0, 15, 250)
 local FOLLOW_SPEED = 0.08
 
---// State
 local following = false
 local processedModels = {}
 local followModels = {}
@@ -738,7 +706,6 @@ local function setPrimaryPart(model)
 	end
 end
 
---// Track eligible models
 local function trackModel(model)
 	if not following then return end -- only track when active
 	if not model:IsA("Model") then return end
@@ -752,15 +719,12 @@ local function trackModel(model)
 	end
 end
 
---// Teleport models close to player if far
 local function checkAndTeleport()
 	for model in pairs(processedModels) do
 		if model and model.PrimaryPart then
 			local distance = (model.PrimaryPart.Position - HumanoidRootPart.Position).Magnitude
 			if distance >= DISTANCE_THRESHOLD then
 				local targetCFrame = HumanoidRootPart.CFrame + FOLLOW_OFFSET
-
-				-- Anchor and reposition
 				for _, part in ipairs(model:GetDescendants()) do
 					if part:IsA("BasePart") then
 						part.Anchored = true
@@ -775,7 +739,6 @@ local function checkAndTeleport()
 	end
 end
 
---// Smoothly move anchored models
 local function moveFollowModels()
 	for model in pairs(followModels) do
 		if model and model.PrimaryPart then
@@ -789,7 +752,6 @@ local function moveFollowModels()
 	end
 end
 
---// Drop all models outward
 local function dropAllModels()
 	following = false
 	local index = 0
@@ -802,28 +764,23 @@ local function dropAllModels()
 			index += 1
 		end
 	end
-	-- Keep them anchored but reset lists
 	processedModels = {}
 	followModels = {}
 end
 
---// Toggle follow/drop
 local function toggleFollow()
 	if following then
 		dropAllModels()
 	else
 		following = true
-		-- Fresh scan of all valid models at start
 		for _, model in ipairs(workspace:GetDescendants()) do
 			trackModel(model)
 		end
 	end
 end
 
---// Auto-track only new models while following
 Workspace.DescendantAdded:Connect(trackModel)
 
---// Run loop
 RunService.Heartbeat:Connect(function()
 	if following then
 		checkAndTeleport()
@@ -860,12 +817,8 @@ RaycastGUI.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 RaycastGUI.BackgroundTransparency = 0.5
 RaycastGUI.Parent = placeholder1
 
-
-
--- Table to store hit model names
 local hitModels = {}
 
--- Function to get the top-level model of a part
 local function getModel(part)
 	if not part then return nil end
 	local model = part:FindFirstAncestorOfClass("Model")
@@ -875,7 +828,6 @@ local function getModel(part)
 	return nil
 end
 
--- Function to perform raycast
 local function castRay()
 	local character = plr.Character
 	if not character then return end
@@ -883,10 +835,10 @@ local function castRay()
 	if not head then return end
 
 	local origin = head.Position
-	local direction = (mouse.Hit.Position - origin).Unit * 1000 -- Ray length 1000 studs
+	local direction = (mouse.Hit.Position - origin).Unit * 1000 
 
 	local raycastParams = RaycastParams.new()
-	raycastParams.FilterDescendantsInstances = {character} -- Ignore self
+	raycastParams.FilterDescendantsInstances = {character} 
 	raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
 
 	local result = workspace:Raycast(origin, direction, raycastParams)
@@ -899,7 +851,6 @@ local function castRay()
 	end
 end
 
--- Raycast on left click
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -907,15 +858,14 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
---// 👇 Insert your validNames list here
 
---// Convert to lowercase lookup table for fast matching
+
+
 local validNameSet = {}
 for _, name in ipairs(validNames) do
 	validNameSet[string.lower(name)] = true
 end
 
---// Function to unanchor all parts in valid models
 local function unanchorValidModels()
 	for _, model in ipairs(workspace:GetDescendants()) do
 		if model:IsA("Model") and validNameSet[string.lower(model.Name)] then
