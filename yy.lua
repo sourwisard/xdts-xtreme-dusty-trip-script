@@ -179,11 +179,9 @@ no.Activated:Connect(function()
 	outerFrame.Visible = true
 end)
 
-
------------------------------------------------------------------------------------ Visibility toggle button
 local visibilityButton = Instance.new("TextButton")
 visibilityButton.Size = UDim2.fromScale(0.05, 0.1)
-visibilityButton.Position = UDim2.fromScale(.4, 0) -- top-left corner
+visibilityButton.Position = UDim2.fromScale(.4, 0)
 visibilityButton.Text = "Hide Frame"
 visibilityButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 visibilityButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -226,9 +224,6 @@ visibilityButton.InputChanged:Connect(function(input)
 	end
 end)
 
-------------------------------------------------------------------------------------end of visibility toggle button
-
-------------------------------------------------------------------------------------item tab buttons
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.fromScale(0.1, 0.1)
 toggleButton.Position = UDim2.fromScale(.05, 0.1)
@@ -330,9 +325,6 @@ togglemobileb.TextScaled = true
 togglemobileb.Parent = itemsTab
 Instance.new("UICorner", togglemobileb).CornerRadius = UDim.new(0.02, 0)
 
-
------------------------------------------------------------------------------------end of item tab buttons
---------------------------------------------------------of lockspheres
 local lockspheres = Instance.new("TextButton")
 lockspheres.Size = UDim2.fromScale(0.05, 0.1)
 lockspheres.Position = UDim2.fromScale(.9, .5)
@@ -346,7 +338,7 @@ lockspheres.Visible = false
 togglemobileb.Activated:Connect(function()
 	lockspheres.Visible = not lockspheres.Visible
 end)
---------------------------------------------------------end of lockspheres
+
 
 local validNames = {
 	"burger","m4a1","pistol","bowlball", "cone","dynamite","landmine","Water Gun","Sticky Bomb","Fake Pistol","AK47","DogTag","radioactivebarrel","silenced pistol", "silver bar" ,"gold bar","swarm grenade", "vaz", "vaza"
@@ -449,8 +441,6 @@ task.spawn(function()
 end)
 
 
-
--------------------------------------------------------------------------------sphere teleport stuffs
 local spheresActive = false
 local mainSphere
 local ySphere
@@ -539,7 +529,6 @@ RunService.RenderStepped:Connect(function()
 	ySphere.Position = mainSphere.Position + Vector3.new(0, yOffset, 0)
 end)
 
---------------------------------------------------------end of sphere teleport stuffs
 -------------------------------------------------------------------------------
 -- bring all stuffs
 -------------------------------------------------------------------------------
@@ -583,7 +572,6 @@ end)
 -------------------------------------------------------------------------------
 
 bringallof1.Activated:Connect(function()
-	-- Get the selected name from the label text
 	local selectedText = selectedItemLabel.Text
 	local selectedName = selectedText:match("Selected:%s*(.-)%s*%(")
 	if not selectedName or selectedName == "None" then
@@ -592,14 +580,12 @@ bringallof1.Activated:Connect(function()
 	end
 
 	selectedName = selectedName:lower()
-
-	-- Get all valid objects and filter only the selected one
+		
 	local models = GetValidObjects()
 	local broughtCount = 0
 
 	for _, obj in ipairs(models) do
 		if obj.Name:lower() == selectedName then
-			-- Find or assign a primary part
 			local primaryPart = obj.PrimaryPart
 			if not primaryPart then
 				for _, part in ipairs(obj:GetDescendants()) do
@@ -610,8 +596,7 @@ bringallof1.Activated:Connect(function()
 					end
 				end
 			end
-
-			-- Teleport if found
+			
 			if primaryPart then
 				local targetPos = HumanoidRootPart.Position + Vector3.new(0, 3, 0)
 				local offset = Vector3.new(math.random(-5, 5), 0, math.random(-5, 5))
@@ -707,7 +692,7 @@ local function setPrimaryPart(model)
 end
 
 local function trackModel(model)
-	if not following then return end -- only track when active
+	if not following then return end 
 	if not model:IsA("Model") then return end
 	local lowerName = string.lower(model.Name)
 	if not validNameSet[lowerName] then return end
@@ -807,9 +792,9 @@ RaycastGUI.Size = UDim2.fromScale(0.8, 0.8)
 RaycastGUI.Position = UDim2.fromScale(0.1, 0.1)
 RaycastGUI.Text = ""
 RaycastGUI.ClearTextOnFocus = false
-RaycastGUI.TextScaled = false -- disable auto scaling
-RaycastGUI.TextSize = 18        -- smaller text
-RaycastGUI.TextWrapped = true   -- enable wrapping
+RaycastGUI.TextScaled = false
+RaycastGUI.TextSize = 18
+RaycastGUI.TextWrapped = true
 RaycastGUI.TextXAlignment = Enum.TextXAlignment.Left
 RaycastGUI.TextYAlignment = Enum.TextYAlignment.Top
 RaycastGUI.TextColor3 = Color3.new(1, 1, 1)
@@ -882,4 +867,3 @@ end
 unanchor.Activated:Connect(function()
 	unanchorValidModels()
 end)
-----------------------------------------------------------------------------------unanchorall
